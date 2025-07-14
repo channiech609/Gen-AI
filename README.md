@@ -21,7 +21,7 @@ https://arxiv.org/abs/1511.06434
 
 
 ## Benchmarking based on our experiment
-| Model | Image Quality | Loss Curve | FID SCORE |
+| Model | Image Quality(Visual) | Loss Curve Behavior | FID SCORE |
 |---|---|---|---|
 
 
