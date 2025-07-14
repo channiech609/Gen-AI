@@ -67,6 +67,6 @@ All models are trained for 50 epochs using the _ optimizer with learning rate = 
 ### Evaluation & Metrics
 Qualitative: Visual inspection of output samples for image sharpness, diversity, and completeness.
 
-Quantitative: Training loss curves an Fréchet Inception Distance (FID) scores to evaluate image quality and distribution similarity.
+Quantitative: Training loss curves and Fréchet Inception Distance (FID) scores to evaluate image quality and distribution similarity.
 
 
