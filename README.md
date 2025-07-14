@@ -20,7 +20,7 @@ We also studied visualizations and evaluation techniques used in GAN research to
 https://arxiv.org/abs/1511.06434
 
 
-## Benchmarking based on our experiment
+## Benchmarking based on our experiments
 | Model | Image Quality(Visual) | Loss Curve Behavior | FID SCORE |
 |---|---|---|---|
 |Baseline (No regularizations)---|---|---|---|
