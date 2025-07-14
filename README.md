@@ -23,7 +23,7 @@ https://arxiv.org/abs/1511.06434
 ## Benchmarking based on our experiments
 | Model | Image Quality(Visual) | Loss Curve Behavior | FID SCORE |
 |---|---|---|---|
-|Baseline (No regularizations)---|---|---|---|
+|Baseline (No regularizations)|---|---|---|
 |L2 Regularization|---|---|---|
 |Dropout (p=0.3)|---|---|---|
 |BatchNorm|---|---|---|
