@@ -57,7 +57,7 @@ We create four variants:
 
 
 ### Training & Fine-Tuning
-All models are trained for 50 epochs using the _ optimizer with learning rate = _ and beta1 = _
+All models are trained for 50 epochs using the Adam optimizer with learning rate = _ and beta1 = _
 
 - Hyperparameters are consistent across all models to ensure fair comparison.
 
