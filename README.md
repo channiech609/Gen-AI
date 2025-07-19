@@ -4,7 +4,6 @@
 Our project aims to evaluate how different regularization techniques (L2, Dropout, and Batch Normalization) affect the performance of generative models. Specifically, we are focusing on image generation using Deep Convolutional Generative Adversarial Networks (DCGANs). The goal is to visually and quantitatively assess how these methods influence image quality, diversity, and training stability.
 
 
-
 ## Literature Review
 
 We reviewed the original DCGAN paper by Radford et al. (2015), which provides a foundational architecture for image generation. Additionally, we explored literature on regularization techniques in deep learning, including:
@@ -34,6 +33,8 @@ We also studied visualizations and evaluation techniques used in GAN research to
 ### Framework Selection
 We are using PyTorch due to its flexibility, strong community support, and ease of integration with Google Colab. The official PyTorch DCGAN tutorial serves as the baseline implementation, which we adapt for our Fashion-MNIST dataset.
 
+### EDA
+We perform an exploratory data analysis(EDA) of the Fashion-MNIST dataset, which has 70,000 grayscale 28×28 images across 10 fashion categories. The EDA covers data inspection, cleaning, and descriptive statistics to understand dataset structure, check for missing values or duplicates, and summarize pixel intensity and class distributions. Visualization includes sample images per class, class distribution bar plots, and pixel intensity histograms. The dataset is balanced across classes with most pixel values near zero (background).
 
 ### Dataset Preparation
 - Dataset: Fashion-MNIST (70,000 grayscale images, 10 classes)
