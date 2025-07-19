@@ -17,23 +17,23 @@ We reviewed the original DCGAN paper by Radford et al. (2015), which provides a 
 
 We also studied visualizations and evaluation techniques used in GAN research to inform our output comparison approach.
 
-https://arxiv.org/abs/1511.06434
+
 
 
 ## Benchmarking based on our experiments
 | Model | Image Quality(Visual) | Loss Curve Behavior | FID SCORE |
 |---|---|---|---|
-|Baseline (No regularizations)|---|---|---|
-|L2 Regularization|---|---|---|
-|Dropout (p=0.3)|---|---|---|
-|BatchNorm|---|---|---|
+|Baseline (No regularizations)|---|---|409.61|
+|L2 Regularization|---|---|339.8|
+|Dropout (p=0.3)|---|---|329.63|
+|BatchNorm|---|---|398.83|
 
 
 
 
 ### Framework Selection
 We are using PyTorch due to its flexibility, strong community support, and ease of integration with Google Colab. The official PyTorch DCGAN tutorial serves as the baseline implementation, which we adapt for our Fashion-MNIST dataset.
-https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+
 
 ### Dataset Preparation
 - Dataset: Fashion-MNIST (70,000 grayscale images, 10 classes)
@@ -69,4 +69,7 @@ Qualitative: Visual inspection of output samples for image sharpness, diversity,
 
 Quantitative: Training loss curves and Fréchet Inception Distance (FID) scores to evaluate image quality and distribution similarity.
 
-
+### References
+https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+https://arxiv.org/abs/1511.06434
+https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
