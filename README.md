@@ -58,11 +58,11 @@ We create four variants:
 
 
 ### Training & Fine-Tuning
-All models are trained for 50 epochs using the Adam optimizer with learning rate = _ and beta1 = _
+All models are trained for 50 epochs using the Adam optimizer with learning rate = 0.0002, beta1 = 0.5, beta2 = 0.999
 
 - Hyperparameters are consistent across all models to ensure fair comparison.
 
-- Model checkpoints and sample outputs (20 images per model) are saved per epoch for analysis.
+- Model checkpoints and sample outputs (64 images per model) are saved per epoch for analysis.
 
 
 ### Evaluation & Metrics
