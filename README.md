@@ -70,6 +70,6 @@ Qualitative: Visual inspection of output samples for image sharpness, diversity,
 Quantitative: Training loss curves and Fréchet Inception Distance (FID) scores to evaluate image quality and distribution similarity.
 
 ### References
-https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
-https://arxiv.org/abs/1511.06434
-https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+- https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+- https://arxiv.org/abs/1511.06434
+- https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
