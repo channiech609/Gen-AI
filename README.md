@@ -19,10 +19,10 @@ We also studied visualizations and evaluation techniques used in GAN research to
 ## Benchmarking based on our experiments
 | Model | Image Quality(Visual) | Loss Curve Behavior | FID SCORE |
 |---|---|---|---|
-|Baseline (No regularizations)|---|---|409.61|
-|L2 Regularization|---|---|339.8|
-|Dropout (p=0.3)|---|---|329.63|
-|BatchNorm|---|---|398.83|
+|Baseline (No regularizations)|Worst: High noise/mode collapse|---|409.61|
+|L2 Regularization|Good: Cleaner than baseline, minor artifacts|---|339.8|
+|Dropout (p=0.3)|Best: Sharp details, diverse samples|---|329.63|
+|BatchNorm|Poor: Blurry or repetitive patterns|---|398.83|
 
 ## Framework Selection
 We are using PyTorch due to its flexibility, strong community support, and ease of integration with Google Colab. The official PyTorch DCGAN tutorial serves as the baseline implementation, which we adapt for our Fashion-MNIST dataset.
