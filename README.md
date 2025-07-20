@@ -74,3 +74,4 @@ Quantitative: Training loss curves and Fréchet Inception Distance (FID) scores 
 - https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
 - https://arxiv.org/abs/1511.06434
 - https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
+- https://github.com/zalandoresearch/fashion-mnist
