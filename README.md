@@ -19,7 +19,10 @@ We also studied visualizations and evaluation techniques used in GAN research to
 ## Benchmarking based on our experiments
 | Model | Image Quality(Visual) | Loss Curve Behavior | FID SCORE |
 |---|---|---|---|
-|Baseline (No regularizations)|Worst: High noise/mode collapse|---|409.61|
+|Baseline (No regularizations)|Worst: High noise/mode collapse|Epochs 1-10: Loss_D drops rapidly from ~1.3 to near 0.05 by Epoch 2 and Loss_G surges from ~2.2 to ~7.8; Early discriminator dominance.
+Epoch 11: Loss_D spikes to 6.1, Loss_G crashes to 0.0014; Critical Collapse.
+Epochs 11-20: Loss_D fluctuates between 0.26–8.4, Loss_G between 0.68–14.9; Significant volatility.
+Epochs 20-50: Loss_D stabilizes near 0.001–0.01 and Loss_G plateaus around 6.0–7.0; Progressive Stabilization.|409.61|
 |L2 Regularization|Good: Cleaner than baseline, minor artifacts|---|339.8|
 |Dropout (p=0.3)|Best: Sharp details, diverse samples|---|329.63|
 |BatchNorm|Poor: Blurry or repetitive patterns|---|398.83|
