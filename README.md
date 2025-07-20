@@ -24,18 +24,18 @@ We also studied visualizations and evaluation techniques used in GAN research to
 |Dropout (p=0.3)|---|---|329.63|
 |BatchNorm|---|---|398.83|
 
-### Framework Selection
+## Framework Selection
 We are using PyTorch due to its flexibility, strong community support, and ease of integration with Google Colab. The official PyTorch DCGAN tutorial serves as the baseline implementation, which we adapt for our Fashion-MNIST dataset.
 
-#### EDA
+## EDA
 We perform an exploratory data analysis(EDA) of the Fashion-MNIST dataset, which has 70,000 grayscale 28×28 images across 10 fashion categories. The EDA covers data inspection, cleaning, and descriptive statistics to understand dataset structure, check for missing values or duplicates, and summarize pixel intensity and class distributions. Visualization includes sample images per class, class distribution bar plots, and pixel intensity histograms. The dataset is balanced across classes with most pixel values near zero (background).
 
-##### Dataset Preparation
+## Dataset Preparation
 - Dataset: Fashion-MNIST (70,000 grayscale images, 10 classes)
 
 - Preprocessing: Images are normalized to [-1, 1] and optionally resized to 64×64.
 
-###### Model Development
+## Model Development
 The generator and discriminator follow the DCGAN architecture.
 
 We create four variants:
@@ -51,7 +51,7 @@ We create four variants:
 - Each model is modular and reusable with parameterized components for easy experimentation.
 
 
-####### Training & Fine-Tuning
+## Training & Fine-Tuning
 All models are trained for 50 epochs using the Adam optimizer with learning rate = 0.0002, beta1 = 0.5, beta2 = 0.999
 
 - Hyperparameters are consistent across all models to ensure fair comparison.
@@ -59,12 +59,12 @@ All models are trained for 50 epochs using the Adam optimizer with learning rate
 - Model checkpoints and sample outputs (64 images per model) are saved per epoch for analysis.
 
 
-######## Evaluation & Metrics
+## Evaluation & Metrics
 Qualitative: Visual inspection of output samples for image sharpness, diversity, and completeness.
 
 Quantitative: Training loss curves and Fréchet Inception Distance (FID) scores to evaluate image quality and distribution similarity.
 
-######### References
+## References
 - https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
 - https://arxiv.org/abs/1511.06434
 - https://docs.pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html
