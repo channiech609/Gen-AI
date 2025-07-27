@@ -1,5 +1,11 @@
 # Gen-AI
 
+##To Start In Google Collab, run the following:
+!git clone https://github.com/channiech609/Gen-AI.git
+%cd Gen-AI
+!ls
+%run Code.py
+
 ## Project Objective
 Our project aims to evaluate how different regularization techniques (L2, Dropout, and Batch Normalization) affect the performance of generative models. Specifically, we are focusing on image generation using Deep Convolutional Generative Adversarial Networks (DCGANs). The goal is to visually and quantitatively assess how these methods influence image quality, diversity, and training stability.
 
