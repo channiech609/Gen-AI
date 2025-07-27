@@ -4,6 +4,7 @@ To Start In Google Collab, run the following:
 - !git clone https://github.com/channiech609/Gen-AI.git
 - %cd Gen-AI
 - !ls
+- !pip install -r requirements.txt
 - %run Code.py
 
 ## Project Objective
