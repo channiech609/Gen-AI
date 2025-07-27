@@ -1,9 +1,14 @@
+# RUN THIS CELL FIRST IN GOOGLE COLAB TO INSTALL DEPENDENCIES
+# !pip install torchmetrics
+
+# --- Full Updated Code ---
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.utils as vutils
 import matplotlib.pyplot as plt
 from torchmetrics.image.fid import FrechetInceptionDistance
+# --- Added necessary imports ---
 import torchvision
 import torchvision.transforms as transforms
 
@@ -19,7 +24,7 @@ lr = 0.0002
 beta1 = 0.5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Data loading and preprocessing for MNIST
+# --- Data loading and preprocessing for MNIST ---
 # Transformations: Resize to 64x64, convert to tensor, normalize to [-1, 1]
 transform = transforms.Compose([
     transforms.Resize(image_size),
@@ -46,6 +51,8 @@ dataloader = torch.utils.data.DataLoader(
 class Generator(nn.Module):
     def __init__(self, nz, ngf, nc):
         super().__init__()
+        # Store nz for reshaping in forward
+        self.nz = nz
         self.net = nn.Sequential(
             nn.ConvTranspose2d(nz, ngf * 8, 4, 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 8),
@@ -63,6 +70,8 @@ class Generator(nn.Module):
             nn.Tanh()
         )
     def forward(self, x):
+        # Reshape the input noise vector from [batch_size, nz] to [batch_size, nz, 1, 1]
+        x = x.view(-1, self.nz, 1, 1)
         return self.net(x)
 
 class Discriminator(nn.Module):
