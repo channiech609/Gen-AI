@@ -19,7 +19,7 @@ ndf = 64       # Discriminator feature maps
 nc = 1         # Number of channels (grayscale)
 image_size = 64 # Resize MNIST from 28x28 to 64x64
 batch_size = 128
-num_epochs = 50
+num_epochs = 100
 lr = 0.0002
 beta1 = 0.5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -32,13 +32,18 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,)), # Normalize for Tanh output
 ])
 
-# Load MNIST training dataset
-dataset = torchvision.datasets.MNIST(
+# Load FashionMNIST training dataset
+full_dataset = torchvision.datasets.FashionMNIST(
     root='./data',
     train=True,
     transform=transform,
     download=True
 )
+
+# Use only a subset of the full dataset
+subset_size = 20000
+subset_indices = list(range(subset_size))
+dataset = torch.utils.data.Subset(full_dataset, subset_indices)
 
 # Create DataLoader for batching and shuffling
 dataloader = torch.utils.data.DataLoader(
