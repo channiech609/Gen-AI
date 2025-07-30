@@ -85,6 +85,50 @@ class Discriminator(nn.Module):
     def forward(self, x):
         return self.net(x)
 
+class DiscriminatorDropout(nn.Module):
+    def __init__(self, nc, ndf):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(nc, ndf, 4, 2, 1, bias=False),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(0.3),
+            nn.Conv2d(ndf, ndf * 2, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(ndf * 2),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(0.3),
+            nn.Conv2d(ndf * 2, ndf * 4, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(ndf * 4),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(ndf * 4, ndf * 8, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(ndf * 8),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
+            nn.Sigmoid()
+        )
+    def forward(self, x):
+        return self.net(x)
+
+class DiscriminatorNoBN(nn.Module):
+    def __init__(self, nc, ndf):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(nc, ndf, 4, 2, 1, bias=False),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(ndf, ndf * 2, 4, 2, 1, bias=False),
+            # BatchNorm removed
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(ndf * 2, ndf * 4, 4, 2, 1, bias=False),
+            # BatchNorm removed
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(ndf * 4, ndf * 8, 4, 2, 1, bias=False),
+            # BatchNorm removed
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(ndf * 8, 1, 4, 1, 0, bias=False),
+            nn.Sigmoid()
+        )
+    def forward(self, x):
+        return self.net(x)
+
 # GAN Training Class
 class GAN:
     def __init__(self, netG, netD, device, latent_dim=100, lr=0.0002, betas=(0.5, 0.999), weight_decay=0.0):
@@ -155,7 +199,25 @@ class GAN:
 netG_base = Generator(nz, ngf, nc)
 netD_base = Discriminator(nc, ndf)
 gan_base = GAN(netG_base, netD_base, device)
-history_base = gan_base.train(dataloader, num_epochs)
+history_base = gan_base.train(dataloader, num_epochs, verbose=False)
+
+# L2 Regularization
+netG_l2 = Generator(nz, ngf, nc)
+netD_l2 = Discriminator(nc, ndf)
+gan_l2 = GAN(netG_l2, netD_l2, device, weight_decay=0.01)
+history_l2 = gan_l2.train(dataloader, num_epochs, verbose=False)
+
+# Dropout in Discriminator
+netG_dropout = Generator(nz, ngf, nc)
+netD_dropout = DiscriminatorDropout(nc, ndf)
+gan_dropout = GAN(netG_dropout, netD_dropout, device)
+history_dropout = gan_dropout.train(dataloader, num_epochs, verbose=False)
+
+# BatchNorm Off in Discriminator
+netG_bn = Generator(nz, ngf, nc)
+netD_bn = DiscriminatorNoBN(nc, ndf)
+gan_bn = GAN(netG_bn, netD_bn, device)
+history_bn = gan_bn.train(dataloader, num_epochs, verbose=False)
 
 def plot_losses(histories, labels):
     plt.figure(figsize=(12, 5))
@@ -262,7 +324,7 @@ def compute_fid(models_dict, num_samples=128, step=32):
     
     return fid_scores
 
-# --- Run it for Dropout and NoBatchNorm ---
+# --- Dropout and NoBatchNorm ---
 models_to_eval = {
     "Baseline": netG_base,
     "L2": netG_l2,
