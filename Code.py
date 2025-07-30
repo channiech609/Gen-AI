@@ -272,7 +272,7 @@ show_generated_images(
 # !pip install torch-fidelity
 # !pip install torchmetrics --quiet
 
-# Force restart runtime (uncomment if needed)
+# Force restart runtime 
 # import os
 # os.kill(os.getpid(), 9)
 
