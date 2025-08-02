@@ -1,6 +1,3 @@
-
-!pip install torch-fidelity torchmetrics --quiet
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -20,14 +17,15 @@ ngf = 32
 ndf = 32       
 nc = 1         
 image_size = 64
-batch_size = 64   
-num_epochs = 20    
+batch_size = 64
+num_epochs = 20
 lr = 0.0002
 beta1 = 0.5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print("CUDA available:", torch.cuda.is_available())
-print("GPU device name:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "None")
+if torch.cuda.is_available():
+    print("GPU device name:", torch.cuda.get_device_name(0))
 
 
 transform = transforms.Compose([
@@ -36,17 +34,17 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-
+# Load dataset
 full_dataset = torchvision.datasets.FashionMNIST(
     root="./data", train=True, download=True, transform=transform
 )
 
-subset_size = 5000  # Reduced from 20000
+subset_size = 5000
 subset_indices = list(range(subset_size))
 dataset = torch.utils.data.Subset(full_dataset, subset_indices)
 dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
 
-# Generator & Discriminator Definitions
+# Generator Definition
 class Generator(nn.Module):
     def __init__(self, nz, ngf, nc):
         super().__init__()
@@ -70,6 +68,7 @@ class Generator(nn.Module):
     def forward(self, z):
         return self.net(z.view(z.size(0), z.size(1), 1, 1))
 
+# Standard Discriminator
 class Discriminator(nn.Module):
     def __init__(self, nc, ndf):
         super().__init__()
@@ -92,6 +91,7 @@ class Discriminator(nn.Module):
     def forward(self, x):
         return self.net(x)
 
+# Discriminator with Dropout
 class DiscriminatorDropout(nn.Module):
     def __init__(self, nc, ndf):
         super().__init__()
@@ -116,6 +116,7 @@ class DiscriminatorDropout(nn.Module):
     def forward(self, x):
         return self.net(x)
 
+# Discriminator without BatchNorm
 class DiscriminatorNoBN(nn.Module):
     def __init__(self, nc, ndf):
         super().__init__()
@@ -201,10 +202,7 @@ class GAN:
             print("Training Complete.")
         return self.history
 
-# ================================
-# PAIRWISE COMPARISON FUNCTIONS
-# ================================
-
+# Analysis Functions
 def smooth_curve(data, window_length=21, polyorder=3):
     """Apply Savitzky-Golay smoothing"""
     if len(data) < window_length:
@@ -217,7 +215,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
     """Create detailed pairwise comparison between baseline and one variant"""
     
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 10))
-    fig.suptitle(f'🔍 Analysis: {baseline_label} vs {variant_label}', 
+    fig.suptitle(f'Analysis: {baseline_label} vs {variant_label}', 
                  fontsize=18, fontweight='bold')
     
     # Extract and smooth data
@@ -238,7 +236,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
              label=f'{baseline_label}', alpha=0.8)
     ax1.plot(variant_g_smooth, color=variant_color, linewidth=3, 
              label=f'{variant_label}', alpha=0.8)
-    ax1.set_title('📈 Generator Loss Comparison', fontweight='bold', fontsize=14)
+    ax1.set_title('Generator Loss Comparison', fontweight='bold', fontsize=14)
     ax1.set_xlabel('Iterations')
     ax1.set_ylabel('Generator Loss')
     ax1.legend(fontsize=12)
@@ -250,7 +248,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
     improvement = ((final_baseline - final_variant) / final_baseline) * 100
     
     ax1.text(0.02, 0.98, 
-             f'📊 Final Losses:\n{baseline_label}: {final_baseline:.3f}\n{variant_label}: {final_variant:.3f}\n💡 Improvement: {improvement:.1f}%', 
+             f'Final Losses:\n{baseline_label}: {final_baseline:.3f}\n{variant_label}: {final_variant:.3f}\nImprovement: {improvement:.1f}%', 
              transform=ax1.transAxes, va='top', fontsize=11, fontweight='bold',
              bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
     
@@ -262,7 +260,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
              linestyle='--', label=f'{baseline_label}', alpha=0.8)
     ax2.plot(variant_d_smooth, color=variant_color, linewidth=3, 
              linestyle='--', label=f'{variant_label}', alpha=0.8)
-    ax2.set_title('🛡️ Discriminator Loss Comparison', fontweight='bold', fontsize=14)
+    ax2.set_title('Discriminator Loss Comparison', fontweight='bold', fontsize=14)
     ax2.set_xlabel('Iterations')
     ax2.set_ylabel('Discriminator Loss')
     ax2.legend(fontsize=12)
@@ -273,7 +271,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
     d_change = ((final_baseline_d - final_variant_d) / final_baseline_d) * 100
     
     ax2.text(0.02, 0.98, 
-             f'📊 Final D Losses:\n{baseline_label}: {final_baseline_d:.3f}\n{variant_label}: {final_variant_d:.3f}\n📈 Change: {d_change:.1f}%', 
+             f'Final D Losses:\n{baseline_label}: {final_baseline_d:.3f}\n{variant_label}: {final_variant_d:.3f}\nChange: {d_change:.1f}%', 
              transform=ax2.transAxes, va='top', fontsize=11,
              bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8))
     
@@ -290,7 +288,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
                      where=(diff_smooth > 0), color='red', alpha=0.3, 
                      label=f'{baseline_label} Better')
     ax3.axhline(y=0, color='black', linestyle='-', alpha=0.5)
-    ax3.set_title(f'⚖️ Advantage Analysis\n({variant_label} - {baseline_label})', 
+    ax3.set_title(f'Advantage Analysis\n({variant_label} - {baseline_label})', 
                   fontweight='bold', fontsize=14)
     ax3.set_xlabel('Iterations')
     ax3.set_ylabel('Loss Difference')
@@ -299,7 +297,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
     
     # Calculate percentage of time variant is better
     better_percentage = (np.sum(diff_smooth <= 0) / len(diff_smooth)) * 100
-    ax3.text(0.02, 0.02, f'✅ {variant_label} better\n{better_percentage:.1f}% of time', 
+    ax3.text(0.02, 0.02, f'{variant_label} better\n{better_percentage:.1f}% of time', 
              transform=ax3.transAxes, va='bottom', fontsize=11, fontweight='bold',
              bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.8))
     
@@ -317,14 +315,14 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
     bp['boxes'][0].set_alpha(0.7)
     bp['boxes'][1].set_alpha(0.7)
     
-    ax4.set_title('📊 Final Performance Distribution\n(Last 20% of Training)', 
+    ax4.set_title('Final Performance Distribution\n(Last 20% of Training)', 
                   fontweight='bold', fontsize=14)
     ax4.set_ylabel('Generator Loss')
     ax4.grid(True, alpha=0.3, axis='y')
     
     # Statistical test
     t_stat, p_value = stats.ttest_ind(baseline_final, variant_final)
-    significance = "Significant ✅" if p_value < 0.05 else "Not Significant ❌"
+    significance = "Significant" if p_value < 0.05 else "Not Significant"
     
     # Effect size (Cohen's d)
     pooled_std = np.sqrt(((len(baseline_final)-1)*np.var(baseline_final) + 
@@ -333,7 +331,7 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
     cohens_d = (np.mean(variant_final) - np.mean(baseline_final)) / pooled_std
     
     ax4.text(0.5, 0.95, 
-             f'🔬 Statistical Test:\np-value: {p_value:.4f}\n{significance}\n📏 Effect Size: {abs(cohens_d):.2f}', 
+             f'Statistical Test:\np-value: {p_value:.4f}\n{significance}\nEffect Size: {abs(cohens_d):.2f}', 
              transform=ax4.transAxes, ha='center', va='top', fontsize=11,
              bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
     
@@ -342,25 +340,25 @@ def create_pairwise_comparison(baseline_history, variant_history, baseline_label
     
     # Print summary
     print(f"\n{'='*60}")
-    print(f"📋 ANALYSIS SUMMARY: {baseline_label} vs {variant_label}")
+    print(f"ANALYSIS SUMMARY: {baseline_label} vs {variant_label}")
     print(f"{'='*60}")
-    print(f"🎯 Generator Performance:")
+    print(f"Generator Performance:")
     print(f"   • {baseline_label} final loss: {final_baseline:.4f}")
     print(f"   • {variant_label} final loss: {final_variant:.4f}")
     print(f"   • Improvement: {improvement:.2f}%")
-    print(f"\n🔬 Statistical Validation:")
+    print(f"\nStatistical Validation:")
     print(f"   • p-value: {p_value:.4f}")
     print(f"   • Significance: {significance}")
     print(f"   • Effect size (Cohen's d): {abs(cohens_d):.3f}")
-    print(f"\n💡 Recommendation:")
+    print(f"\nRecommendation:")
     if improvement > 5 and p_value < 0.05:
-        print(f"   ✅ STRONG: Use {variant_label} - significant improvement!")
+        print(f"   STRONG: Use {variant_label} - significant improvement!")
     elif improvement > 0 and p_value < 0.05:
-        print(f"   ✅ MODERATE: {variant_label} is better, but modest gains")
+        print(f"   MODERATE: {variant_label} is better, but modest gains")
     elif improvement < -5:
-        print(f"   ❌ AVOID: {variant_label} performs worse than {baseline_label}")
+        print(f"   AVOID: {variant_label} performs worse than {baseline_label}")
     else:
-        print(f"   ➖ NEUTRAL: No clear advantage for either method")
+        print(f"   NEUTRAL: No clear advantage for either method")
     print(f"{'='*60}\n")
     
     return {
@@ -377,14 +375,14 @@ def analyze_all_variants(histories, labels, baseline_idx=0):
     
     results = {}
     
-    print(f"🔬 COMPREHENSIVE ANALYSIS AGAINST {baseline_label.upper()}")
+    print(f"COMPREHENSIVE ANALYSIS AGAINST {baseline_label.upper()}")
     print(f"{'='*80}")
     
     for i, (variant_history, variant_label) in enumerate(zip(histories, labels)):
         if i == baseline_idx:
             continue
             
-        print(f"\n🔍 Analyzing: {baseline_label} vs {variant_label}")
+        print(f"\nAnalyzing: {baseline_label} vs {variant_label}")
         print("-" * 50)
         
         result = create_pairwise_comparison(
@@ -395,142 +393,59 @@ def analyze_all_variants(histories, labels, baseline_idx=0):
     
     return results
 
-# ================================
-# TRAINING EXPERIMENTS
-# ================================
+# Main Execution
+if __name__ == "__main__":
+    print("Starting GAN Experiments with Reduced Parameters...")
 
-print("🚀 Starting GAN Experiments with Reduced Parameters...")
+    # Baseline
+    print("\n1. Training Baseline...")
+    netG_base = Generator(nz, ngf, nc)
+    netD_base = Discriminator(nc, ndf)
+    gan_base = GAN(netG_base, netD_base, device)
+    history_base = gan_base.train(dataloader, num_epochs, verbose=False)
 
-# Baseline
-print("\n1️⃣ Training Baseline...")
-netG_base = Generator(nz, ngf, nc)
-netD_base = Discriminator(nc, ndf)
-gan_base = GAN(netG_base, netD_base, device)
-history_base = gan_base.train(dataloader, num_epochs, verbose=False)
+    # L2 Regularization
+    print("\n2. Training L2 Regularization...")
+    netG_l2 = Generator(nz, ngf, nc)
+    netD_l2 = Discriminator(nc, ndf)
+    gan_l2 = GAN(netG_l2, netD_l2, device, weight_decay=0.01)
+    history_l2 = gan_l2.train(dataloader, num_epochs, verbose=False)
 
-# L2 Regularization
-print("\n2️⃣ Training L2 Regularization...")
-netG_l2 = Generator(nz, ngf, nc)
-netD_l2 = Discriminator(nc, ndf)
-gan_l2 = GAN(netG_l2, netD_l2, device, weight_decay=0.01)
-history_l2 = gan_l2.train(dataloader, num_epochs, verbose=False)
+    # Dropout
+    print("\n3. Training Dropout...")
+    netG_dropout = Generator(nz, ngf, nc)
+    netD_dropout = DiscriminatorDropout(nc, ndf)
+    gan_dropout = GAN(netG_dropout, netD_dropout, device)
+    history_dropout = gan_dropout.train(dataloader, num_epochs, verbose=False)
 
-# Dropout
-print("\n3️⃣ Training Dropout...")
-netG_dropout = Generator(nz, ngf, nc)
-netD_dropout = DiscriminatorDropout(nc, ndf)
-gan_dropout = GAN(netG_dropout, netD_dropout, device)
-history_dropout = gan_dropout.train(dataloader, num_epochs, verbose=False)
+    # No BatchNorm
+    print("\n4. Training No BatchNorm...")
+    netG_bn = Generator(nz, ngf, nc)
+    netD_bn = DiscriminatorNoBN(nc, ndf)
+    gan_bn = GAN(netG_bn, netD_bn, device)
+    history_bn = gan_bn.train(dataloader, num_epochs, verbose=False)
 
-# No BatchNorm
-print("\n4️⃣ Training No BatchNorm...")
-netG_bn = Generator(nz, ngf, nc)
-netD_bn = DiscriminatorNoBN(nc, ndf)
-gan_bn = GAN(netG_bn, netD_bn, device)
-history_bn = gan_bn.train(dataloader, num_epochs, verbose=False)
+    # Run Analysis
+    histories = [history_base, history_l2, history_dropout, history_bn]
+    labels = ["Baseline", "L2", "Dropout", "NoBatchNorm"]
 
-# ================================
-# PAIRWISE ANALYSIS
-# ================================
+    print("\n" + "="*80)
+    print("RUNNING COMPREHENSIVE PAIRWISE ANALYSIS")
+    print("="*80)
 
-histories = [history_base, history_l2, history_dropout, history_bn]
-labels = ["Baseline", "L2", "Dropout", "NoBatchNorm"]
+    results = analyze_all_variants(histories, labels, baseline_idx=0)
 
-print("\n" + "="*80)
-print("🎯 RUNNING COMPREHENSIVE PAIRWISE ANALYSIS")
-print("="*80)
+    # Final Summary
+    print("\n" + "="*80)
+    print("FINAL RECOMMENDATIONS")
+    print("="*80)
 
-results = analyze_all_variants(histories, labels, baseline_idx=0)
-
-# ================================
-# FID EVALUATION
-# ================================
-
-print("\n🎨 Computing FID Scores...")
-from torchmetrics.image.fid import FrechetInceptionDistance
-import torchvision.transforms as T
-import torch.nn.functional as F
-
-# Prepare real images for FID
-denorm = T.Normalize((-1,), (2,))
-
-def prep_images(imgs):
-    imgs = denorm(imgs).clamp(0, 1)
-    imgs = F.interpolate(imgs, size=(299, 299), mode='bilinear', align_corners=False)
-    return imgs.repeat(1, 3, 1, 1)
-
-# Collect real images
-real_list = []
-count = 0
-for imgs, _ in dataloader:
-    real_list.append(imgs)
-    count += imgs.size(0)
-    if count >= 64:  # Reduced for speed
-        break
-real_imgs = torch.cat(real_list, dim=0)[:64].to(device)
-real_imgs = prep_images(real_imgs)
-
-def compute_fid(models_dict, num_samples=64, step=16):
-    fid_scores = {}
-    for label, netG in models_dict.items():
-        fid = FrechetInceptionDistance(feature=2048, normalize=True).to(device)
-        fid.update(real_imgs, real=True)
-        
-        netG.eval()
-        seen = 0
-        with torch.no_grad():
-            while seen < num_samples:
-                b = min(step, num_samples - seen)
-                noise = torch.randn(b, nz, device=device)
-                fake = netG(noise)
-                fake = prep_images(fake)
-                fid.update(fake, real=False)
-                seen += b
-        
-        score = fid.compute().item()
-        fid_scores[label] = round(score, 2)
+    best_method = min(results.keys(), key=lambda x: results[x]['improvement_percent'])
+    print(f"Best Performance: {best_method}")
     
-    return fid_scores
-
-models_to_eval = {
-    "Baseline": netG_base,
-    "L2": netG_l2,
-    "Dropout": netG_dropout,
-    "NoBatchNorm": netG_bn
-}
-
-fid_results = compute_fid(models_to_eval)
-
-print("\n📊 FID SCORES COMPARISON:")
-print("="*40)
-baseline_fid = fid_results["Baseline"]
-for method, fid_score in fid_results.items():
-    if method == "Baseline":
-        print(f"🔵 {method}: {fid_score}")
-    else:
-        improvement = ((baseline_fid - fid_score) / baseline_fid) * 100
-        symbol = "✅" if improvement > 0 else "❌"
-        print(f"{symbol} {method}: {fid_score} ({improvement:+.1f}%)")
-
-print(f"\n🏆 BEST FID SCORE: {min(fid_results, key=fid_results.get)} ({min(fid_results.values())})")
-
-# ================================
-# FINAL SUMMARY
-# ================================
-
-print("\n" + "="*80)
-print("🏁 FINAL RECOMMENDATIONS")
-print("="*80)
-
-best_loss_method = min(results.keys(), key=lambda x: results[x]['improvement_percent'])
-best_fid_method = min(fid_results.keys(), key=fid_results.get)
-
-print(f"🎯 Best Loss Performance: {best_loss_method}")
-print(f"🎨 Best FID Score: {best_fid_method}")
-
-if best_loss_method == best_fid_method.replace('Baseline', ''):
-    print(f"🎉 CLEAR WINNER: {best_fid_method} excels in both metrics!")
-else:
-    print(f"🤔 Mixed results - consider your priority: loss vs. image quality")
-
-print("="*80)
+    for method, result in results.items():
+        improvement = result['improvement_percent']
+        significance = "Significant" if result['p_value'] < 0.05 else "Not Significant"
+        print(f"{method}: {improvement:+.1f}% improvement, {significance}")
+    
+    print("="*80)
