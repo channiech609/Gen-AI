@@ -1,4 +1,8 @@
-torch>=2.7.0           
-torchvision>=0.18.0    
-matplotlib>=3.8.0      
-torchmetrics>=1.7.0    
+
+torch>=2.7.0 
+torchvision>=0.18.0 
+matplotlib>=3.8.0 
+torchmetrics>=1.7.0 
+scipy>=1.10.0 
+seaborn>=0.12.0 
+numpy>=1.24.0
